@@ -72,14 +72,14 @@
     border-radius: 50%;
     background: radial-gradient(
       circle at 50% 48%,
-      rgba(255, 245, 238, calc(0.12 + var(--dawn) * 0.38)) 0%,
+      rgba(255, 245, 238, calc(var(--dawn) * 0.5)) 0%,
       rgba(255, 210, 200, calc(var(--dawn) * 0.32)) 22%,
       rgba(255, 185, 195, calc(var(--dawn) * 0.22)) 38%,
       rgba(255, 200, 218, calc(var(--dawn) * 0.1)) 55%,
       transparent 68%
     );
     filter: blur(calc(14px + var(--dawn) * 36px));
-    opacity: calc(0.2 + var(--dawn) * 0.85);
+    opacity: var(--dawn);
   }
 
   .dawn-pink {
