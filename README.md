@@ -2,8 +2,9 @@ sweet sorrow- 苦しいことあっても生きていれば嬉しい瞬間もあ
 
 
 
-ただ聞いて、ただ眺める1分間の短いアプリ体験→よろしければお使いください。
-https://sweet-sorrow0728.vercel.app 
+ただ海の音を聞いて、ただ眺める1分間の短いアプリ体験→。
+
+https://sweet-sorrow0728.vercel.ap
 
 <!-- びっくりマーク！1枚目のスクショ -->
 <img src="スクリーンショット%202026-06-09%20140440.png" width="100%" alt="screenshot1">
