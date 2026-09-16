@@ -72,13 +72,11 @@
     <button id="stopBtn" class="hidden">Stop</button>
   </div>
 </div>
-<audio id="audio" src="0506.mp3" preload="metadata" playsinline webkit-playsinline></audio>
 <script>
 const canvas = document.getElementById('stream');
 const ctx = canvas.getContext('2d');
 let W, H, DPR, isPlaying = false, waveTime = 0, flowAmount = 0;
 let playT0 = 0;
-let audioUnlocked = false;
 let darkProgress = 0;
 let waveSpeedFactor = 1;
 let goodnightShown = false;
@@ -227,22 +225,17 @@ function loop() {
   drawBase(); drawGrass(); drawWaterLines(); drawLeaves(); drawSparkles();
   syncDarkProgress();
   syncWaveSpeed();
-  updateAudioFade();
   waveTime += 16 * WAVE_TIME_SCALE * waveSpeedFactor;
   requestAnimationFrame(loop);
 }
 loop();
 
-const audio = document.getElementById('audio');
 const listenBtn = document.getElementById('listenBtn');
 const stopBtn = document.getElementById('stopBtn');
 const tagline = document.getElementById('tagline');
 const TAGLINE_TEXT = 'ひとりの時間に、そばにいる声';
 const GOODNIGHT_TEXT = 'おやすみなさい';
-const FADE_OUT_SEC = 5;
-const FADE_IN_SEC = 3;
 const SUBTITLE_FADE_MS = 10000;
-let hasLooped = false;
 let taglineTimer = null;
 
 function resetTagline() {
@@ -281,22 +274,6 @@ function startTaglineSequence() {
   }, SUBTITLE_FADE_MS);
 }
 
-function updateAudioFade() {
-  if (!isPlaying || audio.paused) return;
-  const dur = audio.duration;
-  if (!dur || !Number.isFinite(dur)) return;
-  const remaining = dur - audio.currentTime;
-  if (remaining <= FADE_OUT_SEC) {
-    audio.volume = Math.max(0, remaining / FADE_OUT_SEC);
-    return;
-  }
-  if (hasLooped && audio.currentTime < FADE_IN_SEC) {
-    audio.volume = Math.min(1, audio.currentTime / FADE_IN_SEC);
-    return;
-  }
-  audio.volume = 1;
-}
-
 function startPlayback() {
   isPlaying = true;
   playT0 = Date.now();
@@ -306,59 +283,12 @@ function startPlayback() {
   startTaglineSequence();
 }
 
-async function restartPlaybackLoop() {
-  if (!isPlaying) return;
-  hasLooped = true;
-  audio.currentTime = 0;
-  audio.volume = 0;
-  try {
-    await audio.play();
-  } catch (e) {
-    console.error('Loop restart failed:', e);
-  }
-}
-
-listenBtn.addEventListener('click', async () => {
-  try {
-    if (!audioUnlocked) {
-      audio.load();
-      audioUnlocked = true;
-    }
-    hasLooped = false;
-    audio.currentTime = 0;
-    audio.volume = 1.0;
-    audio.muted = false;
-
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      await playPromise;
-    }
-    startPlayback();
-  } catch (e) {
-    console.error('Audio play error:', e);
-    setTimeout(async () => {
-      try {
-        audio.load();
-        hasLooped = false;
-        audio.currentTime = 0;
-        audio.volume = 1.0;
-        await audio.play();
-        startPlayback();
-      } catch (err) {
-        console.error('Retry failed:', err);
-        tagline.textContent = '音声を読み込めませんでした';
-        setTimeout(() => { tagline.textContent = TAGLINE_TEXT; }, 6000);
-      }
-    }, 500);
-  }
+listenBtn.addEventListener('click', () => {
+  startPlayback();
 });
 
 stopBtn.addEventListener('click', () => {
   isPlaying = false;
-  hasLooped = false;
-  audio.pause();
-  audio.currentTime = 0;
-  audio.volume = 1;
   playT0 = 0;
   darkProgress = 0;
   waveSpeedFactor = 1;
@@ -368,16 +298,6 @@ stopBtn.addEventListener('click', () => {
   stopBtn.classList.add('hidden');
   listenBtn.classList.remove('hidden');
   resetTagline();
-});
-
-audio.addEventListener('ended', () => {
-  restartPlaybackLoop();
-});
-
-audio.addEventListener('canplay', () => {
-  if (tagline.textContent.includes('読み込めません')) {
-    resetTagline();
-  }
 });
 </script>
 </body>
