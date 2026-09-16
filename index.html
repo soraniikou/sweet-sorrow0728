@@ -12,7 +12,6 @@
   .overlay { position: fixed; inset: 0; background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.25) 100%); pointer-events: none; z-index: 1; }
   .content { position: relative; z-index: 2; width: 100%; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 1.5rem; color: #c0d4e6; perspective: 1000px; }
   
-  /* 丸みのある筆記体（OS標準フォントの中で最も柔らかいものを優先） */
   h1 { 
     font-family: "Bradley Hand", "Bradley Hand ITC", "Lucida Handwriting", "Comic Sans MS", "Apple Chancery", "Segoe Script", cursive;
     font-size: clamp(2.8rem, 8vw, 4.4rem); 
@@ -55,6 +54,7 @@
 </head>
 <body>
 <canvas id="stream"></canvas>
+<audio id="bgAudio" src="海岸4.mp3" preload="auto" loop playsinline webkit-playsinline></audio>
 <div class="overlay"></div>
 <div class="dark-layer" id="darkLayer" aria-hidden="true"></div>
 <div class="content">
@@ -224,6 +224,7 @@ loop();
 
 const listenBtn = document.getElementById('listenBtn');
 const stopBtn = document.getElementById('stopBtn');
+const bgAudio = document.getElementById('bgAudio');
 
 function startPlayback() {
   isPlaying = true;
@@ -231,13 +232,16 @@ function startPlayback() {
   document.body.classList.add('playing');
   listenBtn.classList.add('hidden');
   stopBtn.classList.remove('hidden');
+
+  bgAudio.currentTime = 0;
+  bgAudio.volume = 1;
+  bgAudio.muted = false;
+  bgAudio.play().catch((err) => {
+    console.warn('再生に失敗しました:', err);
+  });
 }
 
-listenBtn.addEventListener('click', () => {
-  startPlayback();
-});
-
-stopBtn.addEventListener('click', () => {
+function stopPlayback() {
   isPlaying = false;
   playT0 = 0;
   darkProgress = 0;
@@ -247,6 +251,17 @@ stopBtn.addEventListener('click', () => {
   document.body.classList.remove('playing');
   stopBtn.classList.add('hidden');
   listenBtn.classList.remove('hidden');
+
+  bgAudio.pause();
+  bgAudio.currentTime = 0;
+}
+
+listenBtn.addEventListener('click', () => {
+  startPlayback();
+});
+
+stopBtn.addEventListener('click', () => {
+  stopPlayback();
 });
 </script>
 </body>
