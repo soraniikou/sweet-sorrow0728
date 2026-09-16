@@ -27,13 +27,6 @@
     display: inline-block;
   }
   
-  .subtitle { font-size: clamp(0.78rem, 2vw, 0.95rem); font-weight: 300; letter-spacing: 0.22em; margin-bottom: 3rem; opacity: 0.75; text-shadow: 0 1px 2px rgba(0,0,0,0.3); color: #b8ccdc; transition: opacity 10s ease; transform-style: preserve-3d; }
-  .subtitle.fade-out { opacity: 0; }
-  .subtitle.emerge { font-size: clamp(0.858rem, 2.2vw, 1.045rem); animation: emergeFromDepth 12s ease-out forwards; }
-  @keyframes emergeFromDepth {
-    0% { opacity: 0; transform: scale(0.55) translateZ(-120px); filter: blur(6px); }
-    100% { opacity: 0.75; transform: scale(1) translateZ(0); filter: blur(0); }
-  }
   .buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
   button { background: rgba(255, 255, 255, 0.18); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.35); color: #e0ecf5; padding: 0.85rem 2.4rem; font-size: 0.95rem; font-weight: 300; letter-spacing: 0.25em; border-radius: 999px; cursor: pointer; transition: all 0.5s ease; font-family: inherit; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
   button:hover { background: rgba(255, 255, 255, 0.3); transform: translateY(-2px); }
@@ -66,7 +59,6 @@
 <div class="dark-layer" id="darkLayer" aria-hidden="true"></div>
 <div class="content">
   <h1>sweet sorrow</h1>
-  <p class="subtitle" id="tagline">ひとりの時間に、そばにいる声</p>
   <div class="buttons">
     <button id="listenBtn">Listen</button>
     <button id="stopBtn" class="hidden">Stop</button>
@@ -232,47 +224,6 @@ loop();
 
 const listenBtn = document.getElementById('listenBtn');
 const stopBtn = document.getElementById('stopBtn');
-const tagline = document.getElementById('tagline');
-const TAGLINE_TEXT = 'ひとりの時間に、そばにいる声';
-const GOODNIGHT_TEXT = 'おやすみなさい';
-const SUBTITLE_FADE_MS = 10000;
-let taglineTimer = null;
-
-function resetTagline() {
-  if (taglineTimer) {
-    clearTimeout(taglineTimer);
-    taglineTimer = null;
-  }
-  goodnightShown = false;
-  goodnightT0 = 0;
-  tagline.textContent = TAGLINE_TEXT;
-  tagline.classList.remove('fade-out', 'emerge');
-  tagline.style.opacity = '';
-}
-
-function startTaglineSequence() {
-  if (taglineTimer) {
-    clearTimeout(taglineTimer);
-    taglineTimer = null;
-  }
-  goodnightShown = false;
-  goodnightT0 = 0;
-  tagline.textContent = TAGLINE_TEXT;
-  tagline.classList.remove('fade-out', 'emerge');
-  tagline.style.opacity = '';
-  void tagline.offsetWidth;
-  tagline.classList.add('fade-out');
-
-  taglineTimer = setTimeout(() => {
-    taglineTimer = null;
-    if (!isPlaying) return;
-    tagline.classList.remove('fade-out');
-    tagline.textContent = GOODNIGHT_TEXT;
-    tagline.classList.add('emerge');
-    goodnightShown = true;
-    goodnightT0 = Date.now();
-  }, SUBTITLE_FADE_MS);
-}
 
 function startPlayback() {
   isPlaying = true;
@@ -280,7 +231,6 @@ function startPlayback() {
   document.body.classList.add('playing');
   listenBtn.classList.add('hidden');
   stopBtn.classList.remove('hidden');
-  startTaglineSequence();
 }
 
 listenBtn.addEventListener('click', () => {
@@ -297,7 +247,6 @@ stopBtn.addEventListener('click', () => {
   document.body.classList.remove('playing');
   stopBtn.classList.add('hidden');
   listenBtn.classList.remove('hidden');
-  resetTagline();
 });
 </script>
 </body>
